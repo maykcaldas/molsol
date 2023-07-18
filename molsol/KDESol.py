@@ -32,12 +32,13 @@ class KDESolConfig:
     epochs: int = 150
 
 class KDESol:
-    def __init__(self, config, weigths_path=None):
+    def __init__(self, config=KDESolConfig(), weigths_path=model_path):
         self.config = config
         self.voc = voc
-        if weigths_path:
+        if os.path.exists(weigths_path):
             self.load_model(weigths_path)
         else:
+            print("Weights not found. Creating new DNN model.")
             self.model = self.create_model()
 
     def load_model(self, model_path):
