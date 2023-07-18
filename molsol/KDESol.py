@@ -1,9 +1,19 @@
+import os
 import tensorflow as tf
 import kdens
 from dataclasses import dataclass
 import json
+import selfies as sf
+import numpy as np
 
-with open(f"./voc.json", 'r') as inp:
+model_path = os.path.abspath(
+    os.path.join(os.path.split(__file__)[0], "kde10_lstm_r")
+                 )
+vocab_path = os.path.abspath(
+    os.path.join(os.path.split(__file__)[0], "voc.json")
+                 )
+
+with open(vocab_path, 'r') as inp:
   voc = json.load(inp)
 
 @dataclass
@@ -23,13 +33,14 @@ class KDESolConfig:
 
 class KDESol:
     def __init__(self, config, weigths_path=None):
-        self.model = self.create_model(config)
         self.config = config
         self.voc = voc
         if weigths_path:
-            self.model.load_weights(weigths_path)
+            self.load_model(weigths_path)
+        else:
+            self.model = self.create_model()
 
-    def load_weights(self, model_path):
+    def load_model(self, model_path):
         models = []
         for i in range(self.config.nmodels):
             with open(f"{model_path}/m{i}.json", "r") as json_file:
@@ -44,7 +55,9 @@ class KDESol:
         m.models = models
         self.model = m
 
-    def create_inf_model(self, config):
+    def create_inf_model(self):
+        config = self.config
+
         inputs = tf.keras.Input(shape=(None,))
 
         # make embedding and indicate that 0 should be treated as padding mask
@@ -66,7 +79,9 @@ class KDESol:
         model = tf.keras.Model(inputs=inputs, outputs=out, name='sol-rnn-infer')
         return model
 
-    def create_model(self, config):
+    def create_model(self):
+        config = self.config
+
         inputs = tf.keras.Input(shape=(None,))
 
         # make embedding and indicate that 0 should be treated as padding mask
@@ -96,7 +111,9 @@ class KDESol:
         return model, partial_in, partial_out
 
     def run(self, x):
-        return self.model(x)
+        x = self.stoi(self.encoder(x))
+        x = np.array([x, x])
+        return self.model.predict(x)[0]
     
     def __call__(self, x):
         return self.run(x)
@@ -104,5 +121,33 @@ class KDESol:
     def get_config(self):
         pass
 
+    def encoder(self, smiles):
+        try:
+            return sf.encoder(smiles)
+        except:
+            return None
 
+    def stoi(self, selfies):
+        try:
+            label, one_hot = sf.selfies_to_encoding(
+            selfies=selfies,
+            vocab_stoi=voc,
+            pad_to_len=634,
+            enc_type="both"
+            )
+        except:
+            return None
+        return label
+
+
+if __name__ == "__main__":
+    import pandas as pd
     
+    m = KDESol(KDESolConfig(), model_path)
+    print(m.model)
+    
+    df = pd.read_csv("AqSolDB.csv", sep='\t', nrows=100)
+    df = df[['SMILES', 'Solubility']]
+    df["SELFIES"] = df["SMILES"].map(m.encoder)
+    print(df['SELFIES'].iloc[0:1])
+    print(m(df['SELFIES'].iloc[0:1]))
