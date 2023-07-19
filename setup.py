@@ -22,7 +22,7 @@ setup(
         'pandas',
         'tensorflow',
         'kdeepensemble',
-        'sklearn',
+        'scikit-learn',
         'rdkit',
         'selfies',
     ],
