@@ -27,17 +27,18 @@ class KDESolConfig:
     reg_strength: float = 0.01
     lr: float = 1e-4
     drop_rate: float = 0.35
-    nmodels: int = 8
+    nmodels: int = 10
     adv_epsilon: float = 1e-3
     epochs: int = 150
 
 class KDESol:
-    def __init__(self, config, weigths_path=None):
+    def __init__(self, config=KDESolConfig(), weigths_path=model_path):
         self.config = config
         self.voc = voc
         if weigths_path:
             self.load_model(weigths_path)
         else:
+            print("Weights not found. Creating new DNN model.")
             self.model = self.create_model()
 
     def load_model(self, model_path):
