@@ -27,7 +27,7 @@ class KDESolConfig:
     reg_strength: float = 0.01
     lr: float = 1e-4
     drop_rate: float = 0.35
-    nmodels: int = 8
+    nmodels: int = 10
     adv_epsilon: float = 1e-3
     epochs: int = 150
 
