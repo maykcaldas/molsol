@@ -16,7 +16,7 @@ setup(
     url="https://github.com/maykcaldas/molsol",
     license="MIT",
     packages=['molsol'],
-    package_data={'molsol': ['voc.json', 'kde10_lstm_r']},
+    package_data={'molsol': ['voc.json', 'kde10_lstm_r/*']},
     install_requires=[
         'numpy',
         'pandas',
