@@ -51,7 +51,7 @@ class TestKDESol:
         # assert isinstance(model.model[2], keras.engine.functional.Functional)
 
     # @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Synonyms file is not available in GitHub")
-    @pytest.mark.parametrize('input',['CCOOO', 'CNOCNO'])
+    @pytest.mark.parametrize('input',['CCOOO', 'CNOCNO', 'OCC(C1OC(=O)C(=C1O)O)O'])
     def test_predict(self, input):
         """
         Test to cover predicting solubility
