@@ -8,7 +8,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="moldev",
+    name="molsol",
     version=__version__,
     description="A k-deep ensemble model to predict solubility",
     author="Mayk Caldas",
@@ -26,6 +26,11 @@ setup(
         'rdkit',
         'selfies',
     ],
+    extras_require={
+        'dev': [
+            'pytest',
+        ],
+    },
     test_suite="tests",
     long_description=long_description,
     long_description_content_type="text/markdown",
