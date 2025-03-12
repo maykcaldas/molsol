@@ -17,23 +17,14 @@ permissions:
 
 jobs:
   deploy:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.x'
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install build
+    - uses: actions/checkout@v4
     - name: Build package
-      run: python -m build
-    - name: Publish package
-      uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
+      uses: hynek/build-and-inspect-python-package@v2
       with:
-        user: __token__
+        upload-name-suffix: -molsol
+    - name: Publish package
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
         password: ${{ secrets.PYPI_API_TOKEN }}
